@@ -1,7 +1,7 @@
 services:
   web: 
     build:
-      context: app
+      context: lolapp
       target: builder
     ports: 
-      - '8000:8000'
+      - '8081:8000'
