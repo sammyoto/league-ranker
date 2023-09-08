@@ -4,20 +4,20 @@ services:
     volumes:
       - ./data/db:/var/lib/postgresql/data
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=lol_database
+      - POSTGRES_USER=loverules
+      - POSTGRES_PASSWORD=gamerlove123
   backend:
-    build: .
+    build: backend
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
       - "8000:8000"
     environment:
-      - POSTGRES_NAME=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_NAME=lol_database
+      - POSTGRES_USER=loverules
+      - POSTGRES_PASSWORD=gamerlove123
     depends_on:
       - db
   frontend:
