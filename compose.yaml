@@ -4,4 +4,4 @@ services:
       context: lolapp
       target: builder
     ports: 
-      - '8081:8000'
+      - '8000:8000'
