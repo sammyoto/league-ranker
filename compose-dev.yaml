@@ -1,0 +1,9 @@
+services:
+  web: 
+    build:
+      context: lolapp
+      target: dev-envs
+    ports: 
+      - '8081:8000'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
