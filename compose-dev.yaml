@@ -11,8 +11,7 @@ services:
     entrypoint:
     - sleep
     - infinity
-    build: 
-    - backend
+    build: backend
     ports:
       - "8000:8000"
     environment:
