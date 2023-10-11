@@ -4,6 +4,8 @@ import gzip
 import shutil
 import time
 import os
+from data_helper_functions import get_tournament
+from data_helper_functions import get_mapping
 from io import BytesIO
 
 S3_BUCKET_URL = "https://power-rankings-dataset-gprhack.s3.us-west-2.amazonaws.com"
@@ -80,9 +82,62 @@ def download_games(year):
                                    {round((time.time() - start_time)/60, 2)} minutes"
                                )
                                return
-                        
+                           
 
-# DOWNLOADS 10 GAMES
+def download_games_for_tournament(tournamentID):
+    start_time = time.time()
+
+    # delete all games from previous tournament
+    print("Removing data from previous tournament...")
+    if os.path.exists("data/games"):
+        shutil.rmtree("data/games")
+    print("\nData removed successfully.")
+
+    tournament = get_tournament(tournamentID)
+    with open("data/esports-data/mapping_data.json", "r") as json_file:
+       mappings_data = json.load(json_file)
+
+    # make games directory again
+    directory = "games"
+    if not os.path.exists("data/games"):
+        os.makedirs("data/games")
+
+    mappings = {
+        esports_game["esportsGameId"]: esports_game for esports_game in mappings_data
+    }
+
+    game_counter = 0
+
+    tournament_name = tournament["name"]
+
+    print(f"\nWriting tournament {tournament_name} game files...\n")
+
+    for stage in tournament["stages"]:
+        for section in stage["sections"]:
+            for match in section["matches"]:
+                for game in match["games"]:
+                    if game["state"] == "completed":
+                        try:
+                            platform_game_id = mappings[game["id"]]["platformGameId"]
+                        except KeyError:
+                            print(f"{platform_game_id} {game['id']} not found in the mapping table")
+                            continue
+
+                        download_gzip_and_write_to_json(f"{directory}/{platform_game_id}")
+                        game_counter += 1
+
+                        if game_counter % 5 == 0:
+                            print(
+                                f"----- Processed {game_counter} games, current run time: \
+                                {round((time.time() - start_time)/60, 2)} minutes"
+                            )
+
+    print(
+          f"----- Processed {game_counter} games total, in: {round((time.time() - start_time)/60, 2)} minutes"
+         )
+            
+
+# DOWNLOADS 61 GAMES approximately 6 GB of data.
 if __name__ == "__main__":
    download_esports_files()
-   download_games(2023)
+   download_games_for_tournament("110733838935136200")
