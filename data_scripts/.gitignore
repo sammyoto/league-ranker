@@ -1,2 +1,5 @@
 # ignore data
 /data
+
+# pycache
+/__pycache__
