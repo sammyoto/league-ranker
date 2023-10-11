@@ -2,6 +2,7 @@ import json
 
 # Helper Functions
 
+# Actually just opens the file and returns a list of JSON objects
 def get_JSON_dict(filepath):
    f = open(filepath, "r")
    data = json.load(f)
@@ -15,7 +16,6 @@ def get_all_keys(data):
       if key not in keys:
         keys.append(key)
   return keys
-
 
 
 # GET functions
@@ -65,6 +65,13 @@ def get_mapping(esportsID, filepath="data/esports-data/mapping_data.json"):
        
     return "Mapping Not Found"
 
+def get_game_data(platformGameId):
+   try:
+      data = get_JSON_dict(f"data/games/{platformGameId}.json")
+      return data
+   except:
+      return "Game Not Found"
+
 # TESTS
 if __name__ == "__main__":
 
@@ -102,4 +109,10 @@ if __name__ == "__main__":
    print("Should be:\nESPORTSTMNT01:3416295\n")
    print("Returned:")
    print(mapping["platformGameId"])
-   
+
+   #Get game data
+   print("\nTesting get game data:\n")
+   game_data = get_game_data("ESPORTSTMNT03:3196037")
+   print("Should be:\nESPORTSTMNT03:3196037\n")
+   print("Returned:")
+   print(game_data[0]["platformGameId"])
