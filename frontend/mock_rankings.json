@@ -1,0 +1,20 @@
+[
+    {
+        "rank" : 1,
+        "team_name" : "Sammyoto's Team",
+        "league" : "LCK",
+        "power_ranking" : 25
+    },
+    {
+        "rank" : 2,
+        "team_name" : "Faker's Team",
+        "league" : "LCS",
+        "power_ranking" : 22
+    },
+    {
+        "rank" : 3,
+        "team_name" : "Shurko Warriors",
+        "league" : "LCO",
+        "power_ranking" : 19
+    }
+]

@@ -131,6 +131,7 @@ def get_game_feature_vectors(game, teams):
 def get_tournament_feature_vectors(tournamentID):
     tournament = get_tournament(tournamentID)
     game_counter = 0
+    load_failed_count = 0
     tournament_feature_vectors = []
 
     for stage in tournament["stages"]:
@@ -139,14 +140,24 @@ def get_tournament_feature_vectors(tournamentID):
                 teams = match["teams"]
                 for game in match["games"]:
                     if game["state"] == "completed":
-                        tournament_feature_vectors.append(get_game_feature_vectors(game, teams))
+                        try:
+                            tournament_feature_vectors.append(get_game_feature_vectors(game, teams))
+                        except:
+                            print(f"Game {game_counter} could not be loaded, continuing...")
+                            load_failed_count += 1
+                            continue
+                        if game_counter == 5:
+                            return tournament_feature_vectors
+
+
+                        
                         game_counter += 1
                         print(f"Games loaded: {game_counter}")
-                        if game_counter == 9:
-                            return tournament_feature_vectors
+  
 
     tournament_slug = tournament["slug"]
     print(f"Total Games For {tournament_slug}: {game_counter}")
+    print(f"Total Games Failed To Load For {tournament_slug}: {load_failed_count}")
     return tournament_feature_vectors
 
 
