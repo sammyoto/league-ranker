@@ -64,7 +64,6 @@ def create_participant_feature_vector(participant_data):
                       "TOTAL_TIME_CROWD_CONTROL_DEALT_TO_CHAMPIONS", "TOTAL_HEAL_ON_TEAMMATES"]
 
     # Append relevant features
-    feature_vector.append(participant_data["participantID"])
     feature_vector.append(participant_data["level"])
     feature_vector.append(participant_data["shutdownValue"])
     feature_vector.append(participant_data["totalGold"])
@@ -141,18 +140,21 @@ def get_tournament_feature_vectors(tournamentID):
                 for game in match["games"]:
                     if game["state"] == "completed":
                         try:
-                            tournament_feature_vectors.append(get_game_feature_vectors(game, teams))
+                            game_feature_vectors = get_game_feature_vectors(game, teams)
+
+                            if isinstance(game_feature_vectors, str):
+                                raise Exception(game_feature_vectors)
+                            
+                            tournament_feature_vectors.append(game_feature_vectors)
                         except:
                             print(f"Game {game_counter} could not be loaded, continuing...")
                             load_failed_count += 1
                             continue
-                        if game_counter == 5:
-                            return tournament_feature_vectors
 
-
-                        
                         game_counter += 1
-                        print(f"Games loaded: {game_counter}")
+
+                        if game_counter % 10 == 0:
+                            print(f"Games loaded: {game_counter}")
   
 
     tournament_slug = tournament["slug"]
