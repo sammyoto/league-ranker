@@ -2,9 +2,44 @@
 .main {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
   align-items: center;
-  padding: 6rem;
+  padding: 2rem; 
   min-height: 100vh;
+  background-color: #ffe3ed;
 }
 
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  color: #ff6b91;
+  font-family: 'CuteFont', cursive;
+  text-align: center;
+}
+
+.description {
+  font-size: 1rem;
+  color: #ff9cbb;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.subtitle {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #ff6b91;
+}
+
+.list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.listItem {
+  margin: 1rem 0;
+  color: #ff6b91;
+  font-family: 'CuteFont', cursive;
+  text-align: center;
+}
