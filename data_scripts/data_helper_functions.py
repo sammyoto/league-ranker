@@ -71,6 +71,19 @@ def get_game_data(platformGameId):
       return data
    except:
       return "Game Not Found"
+   
+def get_tournament_ids_by_year(year, filepath="data/esports-data/tournaments.json"):
+   data = get_JSON_dict(filepath)
+
+   tournament_ids = []
+   
+   for tournament in data:
+       start_date = tournament.get("startDate", "")
+       if start_date.startswith(str(year)):
+          tournament_ids.append(tournament["id"])
+
+   return tournament_ids
+
 
 # TESTS
 if __name__ == "__main__":
