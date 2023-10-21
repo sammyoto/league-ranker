@@ -20,9 +20,14 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
 
     # Create team data
     team_id = tournament_team_data["id"]
+    esports_game_id = mapping["esportsGameId"]
+    platform_game_id = mapping["platformGameId"]
 
     metadata["team"]["id"] = team_id
     metadata["team"]["name"] = get_team(tournament_team_data["id"])["name"]
+    metadata["team"]["esportsGameId"] = esports_game_id
+    metadata["team"]["platformGameId"] = platform_game_id
+
     
     for team in tournament_game_data["teams"]:
         if team["id"] == team_id:
@@ -31,6 +36,7 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
 
     # Create player data
     new_players = mapping["participantMapping"]
+
     players = {}
 
     team_side = 200
@@ -44,12 +50,12 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
             if player["participantID"] == int(key) and player["teamID"] == team_side:
                  players[key] = {"id" : player_id, "champion" : player["championName"], "summonerName" : player["summonerName"]}
                  break
-        
-        for player in tournament_team_data["players"]:
-            if player["id"] == player_id:
+                 
+        for team_player in tournament_team_data["players"]:
+            if team_player["id"] == player_id:
                 players[key]["role"] = player["role"]
                 break
-        
+
     metadata["players"] = players
 
     return metadata
@@ -73,6 +79,8 @@ def create_participant_feature_vector(participant_data):
         if stat["name"] in relevant_stats:
             feature_vector.append(stat["value"])
 
+    feature_vector.append(str(participant_data["participantID"]))
+
     return feature_vector
 
 def create_feature_vectors(game, keys):
@@ -82,7 +90,6 @@ def create_feature_vectors(game, keys):
     feature_vectors = []
     
     # Create a feature vector for all players on a team T in a given game M
-    # TODO Check each event type and get relevant data from event
 
     for dictionary in game:
         event_type = dictionary["eventType"]
@@ -147,7 +154,7 @@ def get_tournament_feature_vectors(tournamentID):
                             
                             tournament_feature_vectors.append(game_feature_vectors)
                         except:
-                            print(f"Game {game_counter} could not be loaded, continuing...")
+                            # print(f"Game {game_counter} could not be loaded, continuing...")
                             load_failed_count += 1
                             continue
 
