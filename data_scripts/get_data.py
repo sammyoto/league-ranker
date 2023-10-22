@@ -25,7 +25,6 @@ def download_gzip_and_write_to_json(file_name):
            with gzip.GzipFile(fileobj=gzip_bytes, mode="rb") as gzipped_file:
                with open(f"data/{file_name}.json", 'wb') as output_file:
                    shutil.copyfileobj(gzipped_file, output_file)
-               print(f"{file_name}.json written")
        except Exception as e:
            print("Error:", e)
    else:
@@ -126,7 +125,7 @@ def download_games_for_tournament(tournamentID):
                         download_gzip_and_write_to_json(f"{directory}/{platform_game_id}")
                         game_counter += 1
 
-                        if game_counter % 5 == 0:
+                        if game_counter % 10 == 0:
                             print(
                                 f"----- Processed {game_counter} games, current run time: \
                                 {round((time.time() - start_time)/60, 2)} minutes"

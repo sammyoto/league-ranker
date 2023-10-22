@@ -20,22 +20,36 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
 
     # Create team data
     team_id = tournament_team_data["id"]
+    esports_game_id = mapping["esportsGameId"]
+    platform_game_id = mapping["platformGameId"]
 
     metadata["team"]["id"] = team_id
     metadata["team"]["name"] = get_team(tournament_team_data["id"])["name"]
+    metadata["team"]["esportsGameId"] = esports_game_id
+    metadata["team"]["platformGameId"] = platform_game_id
+
+    blue = mapping["teamMapping"]["200"]
+    red = mapping["teamMapping"]["100"]
+
+    if metadata["team"]["id"] == blue:
+        metadata["team"]["side"] = 100
     
+    if metadata["team"]["id"] == red:
+        metadata["team"]["side"] = 200
+
     for team in tournament_game_data["teams"]:
         if team["id"] == team_id:
-            metadata["team"]["side"] = team["side"]
             metadata["team"]["result"] = team["result"]["outcome"]
 
     # Create player data
     new_players = mapping["participantMapping"]
+
+    if len(new_players) < 10:
+        return "Game mapping invalid."
+
     players = {}
 
-    team_side = 200
-    if metadata["team"]["side"] == "blue":
-        team_side = 100
+    team_side = metadata["team"]["side"]
 
     for key in new_players:
         player_id = new_players[key]
@@ -45,11 +59,7 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
                  players[key] = {"id" : player_id, "champion" : player["championName"], "summonerName" : player["summonerName"]}
                  break
         
-        for player in tournament_team_data["players"]:
-            if player["id"] == player_id:
-                players[key]["role"] = player["role"]
-                break
-        
+
     metadata["players"] = players
 
     return metadata
@@ -73,6 +83,8 @@ def create_participant_feature_vector(participant_data):
         if stat["name"] in relevant_stats:
             feature_vector.append(stat["value"])
 
+    feature_vector.append(str(participant_data["participantID"]))
+
     return feature_vector
 
 def create_feature_vectors(game, keys):
@@ -82,7 +94,6 @@ def create_feature_vectors(game, keys):
     feature_vectors = []
     
     # Create a feature vector for all players on a team T in a given game M
-    # TODO Check each event type and get relevant data from event
 
     for dictionary in game:
         event_type = dictionary["eventType"]
@@ -108,7 +119,7 @@ def get_team_feature_vectors(game, team, mapping):
     keys = []
 
     for key in metadata["players"]:
-        keys.append(key)
+        keys.append(key)   
 
     player_feature_vectors = create_feature_vectors(game_data, keys)   
 
@@ -119,6 +130,11 @@ def get_game_feature_vectors(game, teams):
 
     if isinstance(mapping, str):
         return "Game mapping doesn't exist."
+    
+    # If mapping paricipants < 10 return string
+    
+    if len(mapping["participantMapping"]) < 10:
+        return "Invalid mapping."
     
     # TODO make sure teams[0] is blue and teams[1] is red
     
@@ -147,7 +163,7 @@ def get_tournament_feature_vectors(tournamentID):
                             
                             tournament_feature_vectors.append(game_feature_vectors)
                         except:
-                            print(f"Game {game_counter} could not be loaded, continuing...")
+                            # print(f"Game {game_counter} could not be loaded, continuing...")
                             load_failed_count += 1
                             continue
 
