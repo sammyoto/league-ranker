@@ -16,7 +16,7 @@ def create_final_vectors(features):
                       "TOTAL_DAMAGE_DEALT_TO_CHAMPIONS", "TOTAL_DAMAGE_TAKEN", "TOTAL_DAMAGE_SELF_MITIGATED", "TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES", 
                       "TOTAL_DAMAGE_DEALT_TO_BUILDINGS", "TOTAL_DAMAGE_DEALT_TO_TURRETS", "TOTAL_DAMAGE_DEALT_TO_OBJECTIVES", 
                       "TOTAL_TIME_CROWD_CONTROL_DEALT_TO_CHAMPIONS", "TOTAL_HEAL_ON_TEAMMATES", "participantID", "CHAMPION", "SUMMONER_NAME", 
-                      "ROLE", "ESPORTS_ID", "PLATFORM_ID", "SIDE", "RESULT"]
+                      "ESPORTS_ID", "PLATFORM_ID", "SIDE", "RESULT"]
 
     df = pd.DataFrame(columns=column_names)
 
@@ -53,7 +53,6 @@ def create_final_vectors(features):
                 # Appends
                 vector.append(player["champion"])
                 vector.append(player["summonerName"])
-                vector.append(player["role"])
                 vector.append(esports_id)
                 vector.append(platform_id)
                 vector.append(side)
@@ -70,42 +69,32 @@ def load_data_to_csv(tournaments):
                       "TOTAL_DAMAGE_DEALT_TO_CHAMPIONS", "TOTAL_DAMAGE_TAKEN", "TOTAL_DAMAGE_SELF_MITIGATED", "TOTAL_DAMAGE_SHIELDED_ON_TEAMMATES", 
                       "TOTAL_DAMAGE_DEALT_TO_BUILDINGS", "TOTAL_DAMAGE_DEALT_TO_TURRETS", "TOTAL_DAMAGE_DEALT_TO_OBJECTIVES", 
                       "TOTAL_TIME_CROWD_CONTROL_DEALT_TO_CHAMPIONS", "TOTAL_HEAL_ON_TEAMMATES", "participantID", "CHAMPION", "SUMMONER_NAME", 
-                      "ROLE", "ESPORTS_ID", "PLATFORM_ID", "SIDE", "RESULT"]
+                      "ESPORTS_ID", "PLATFORM_ID", "SIDE", "RESULT"]
     
     final_vectors_df = pd.DataFrame(columns=column_names)
 
+    checkpoint_num = 0
+    tournaments_loaded = 0
+
     for tournament in tournaments:
-        #download_games_for_tournament(tournament)
+        download_games_for_tournament(tournament)
         feature_vectors = get_tournament_feature_vectors(tournament)
         vectors_df = create_final_vectors(feature_vectors)
         final_vectors_df = pd.concat([final_vectors_df, vectors_df])
 
-    filepath = Path('data/df_csv/features.csv')
+        tournaments_loaded += 1
+
+        if tournaments_loaded % 5 == 0:
+                path = f'data/df_csv/features{checkpoint_num}.csv'
+                filepath = Path(path)
+                filepath.parent.mkdir(parents=True, exist_ok=True)  
+                final_vectors_df.to_csv(filepath)
+                checkpoint_num += 1
+
+
+    filepath = Path('data/df_csv/features_final.csv')
     filepath.parent.mkdir(parents=True, exist_ok=True)  
-    final_vectors_df.to_csv(filepath) 
-
-
-def train_model(csv_file_path):
-
-    weighter = Weighter()
-
-    final_vectors_df = pd.read_csv(csv_file_path, index_col=[0])
-
-    column_names = final_vectors_df.columns
-
-    #splt data into test and train
-    X = final_vectors_df.loc[:, final_vectors_df.columns != "RESULT"].values
-    y = final_vectors_df["RESULT"].values
-
-    Xtrain, Xtest, ytrain, ytest = train_test_split(X, y)
-
-    #fit the model
-    weighter.fit(column_names=column_names[:-1], Xtrain=Xtrain, ytrain=ytrain, scaled=False)
-    
-    accuracy_score = weighter.clf_.score(Xtest, ytest)
-    print(f"Accuracy Score: {accuracy_score}\n")
-
-    return weighter
+    final_vectors_df.to_csv(filepath)
 
 if __name__ == "__main__":
 

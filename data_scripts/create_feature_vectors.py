@@ -28,20 +28,28 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
     metadata["team"]["esportsGameId"] = esports_game_id
     metadata["team"]["platformGameId"] = platform_game_id
 
+    blue = mapping["teamMapping"]["200"]
+    red = mapping["teamMapping"]["100"]
+
+    if metadata["team"]["id"] == blue:
+        metadata["team"]["side"] = 100
     
+    if metadata["team"]["id"] == red:
+        metadata["team"]["side"] = 200
+
     for team in tournament_game_data["teams"]:
         if team["id"] == team_id:
-            metadata["team"]["side"] = team["side"]
             metadata["team"]["result"] = team["result"]["outcome"]
 
     # Create player data
     new_players = mapping["participantMapping"]
 
+    if len(new_players) < 10:
+        return "Game mapping invalid."
+
     players = {}
 
-    team_side = 200
-    if metadata["team"]["side"] == "blue":
-        team_side = 100
+    team_side = metadata["team"]["side"]
 
     for key in new_players:
         player_id = new_players[key]
@@ -50,11 +58,7 @@ def create_game_meta_data(tournament_game_data, tournament_team_data, gamefile_p
             if player["participantID"] == int(key) and player["teamID"] == team_side:
                  players[key] = {"id" : player_id, "champion" : player["championName"], "summonerName" : player["summonerName"]}
                  break
-                 
-        for team_player in tournament_team_data["players"]:
-            if team_player["id"] == player_id:
-                players[key]["role"] = player["role"]
-                break
+        
 
     metadata["players"] = players
 
@@ -115,7 +119,7 @@ def get_team_feature_vectors(game, team, mapping):
     keys = []
 
     for key in metadata["players"]:
-        keys.append(key)
+        keys.append(key)   
 
     player_feature_vectors = create_feature_vectors(game_data, keys)   
 
@@ -126,6 +130,11 @@ def get_game_feature_vectors(game, teams):
 
     if isinstance(mapping, str):
         return "Game mapping doesn't exist."
+    
+    # If mapping paricipants < 10 return string
+    
+    if len(mapping["participantMapping"]) < 10:
+        return "Invalid mapping."
     
     # TODO make sure teams[0] is blue and teams[1] is red
     
