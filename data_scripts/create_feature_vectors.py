@@ -89,7 +89,7 @@ def create_participant_feature_vector(participant_data):
 
 def create_feature_vectors(game, keys):
 
-    # Just one relevant typr for now, will likely add more later
+    # Just one relevant type for now, will likely add more later
     relevant_event_types = ["stats_update"]
     feature_vectors = []
     
@@ -136,7 +136,6 @@ def get_game_feature_vectors(game, teams):
     if len(mapping["participantMapping"]) < 10:
         return "Invalid mapping."
     
-    # TODO make sure teams[0] is blue and teams[1] is red
     
     blue_team_feature_vectors = get_team_feature_vectors(game, teams[0], mapping)
     red_team_feature_vectors = get_team_feature_vectors(game, teams[1], mapping)
@@ -177,18 +176,6 @@ def get_tournament_feature_vectors(tournamentID):
     print(f"Total Games For {tournament_slug}: {game_counter}")
     print(f"Total Games Failed To Load For {tournament_slug}: {load_failed_count}")
     return tournament_feature_vectors
-
-
-if __name__ == "__main__":
-
-    # Test get_tournament_feature_vectors
-    print("Testing get_tournament_feature_vectors:\n")
-    tournament_feature_vectors = get_tournament_feature_vectors("110733838935136200")
-    print("Should be:\n83\n")
-    print("Returned:")
-    print(len(tournament_feature_vectors))
-
-    print(tournament_feature_vectors[0][0])
 
 
   

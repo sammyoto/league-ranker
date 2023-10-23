@@ -61,7 +61,7 @@ def create_final_vectors(features):
 
     return df
 
-
+# downloads games for a list of tournaments, creates feature vectors, and saves features vectors to csv
 def load_data_to_csv(tournaments):
     column_names =   ["level", "shutdownValue", "totalGold", "MINIONS_KILLED", "NEUTRAL_MINIONS_KILLED", 
                       "NEUTRAL_MINIONS_KILLED_YOUR_JUNGLE", "NEUTRAL_MINIONS_KILLED_ENEMY_JUNGLE", 

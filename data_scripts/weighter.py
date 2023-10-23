@@ -1,5 +1,5 @@
 # Code based off of https://github.com/mesosbrodleto/playerank/blob/master/playerank/models/Weighter.py
-# Minor changes made, but same for the most part
+# Changes made, but same for the most part
 
 from sklearn.base import BaseEstimator
 from sklearn.svm import LinearSVC

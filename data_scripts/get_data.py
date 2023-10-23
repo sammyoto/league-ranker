@@ -82,7 +82,7 @@ def download_games(year):
                                )
                                return
                            
-
+# Basically the same as download games, but do it by tournament ID
 def download_games_for_tournament(tournamentID):
     start_time = time.time()
 
